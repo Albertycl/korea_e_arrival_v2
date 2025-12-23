@@ -70,7 +70,7 @@ const BusinessCard: React.FC = () => {
             </div>
             <div>
               <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Line ID</p>
-              <p className="text-base font-bold text-gray-700">yvonne0105</p>
+              <p className="text-base font-bold text-gray-700">@lqa7424m</p>
             </div>
           </div>
           <div className="flex items-center gap-4 group/item">
@@ -92,7 +92,7 @@ const BusinessCard: React.FC = () => {
           </div>
           <div className="flex items-end">
             <a
-              href="https://line.me/ti/p/~yvonne0105"
+              href="https://line.me/ti/p/~@lqa7424m"
               target="_blank"
               rel="noreferrer"
               className="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-full font-bold text-xs shadow-lg shadow-green-200 transition-all flex items-center gap-2 active:scale-95"
