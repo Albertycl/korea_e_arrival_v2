@@ -1,28 +1,56 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import ArrivalCard from './components/ArrivalCard';
 import GuideInfo from './components/GuideInfo';
-import { ArrivalCardData } from './types';
+import AdminPage from './components/AdminPage';
+import { ArrivalCardData, AdminConfig, PurposeOfVisit } from './types';
 import { INITIAL_CARD_DATA, EXAMPLE_CARD_DATA } from './constants';
 
-type AppStep = 'guide' | 'practice';
+type AppStep = 'guide' | 'practice' | 'admin';
 
 function App() {
   const [cardData, setCardData] = useState<ArrivalCardData>(INITIAL_CARD_DATA);
   const [activeTab, setActiveTab] = useState<AppStep>('guide');
   const [simulatorStep, setSimulatorStep] = useState(0);
 
+  // Check URL for custom configuration on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const configRaw = params.get('c');
+    if (configRaw) {
+      try {
+        const decoded = decodeURIComponent(atob(configRaw));
+        const config: AdminConfig = JSON.parse(decoded);
+        
+        // Update INITIAL_CARD_DATA with these custom values
+        setCardData(prev => ({
+          ...prev,
+          flightNumber: config.arrivalFlight,
+          entryDate: config.arrivalDate,
+          departureFlightNumber: config.departureFlight,
+          departureDate: config.departureDate,
+          detailAddress: config.hotelName,
+          koreaAddressKr: config.hotelAddressKr,
+          koreaAddress: config.hotelAddressEn,
+          koreaPhone: config.hotelPhone
+        }));
+      } catch (e) {
+        console.error("Failed to decode URL config", e);
+      }
+    }
+  }, []);
+
   const handleCardChange = (field: keyof ArrivalCardData, value: string) => {
     setCardData(prev => ({ ...prev, [field]: value }));
   };
 
   const loadExampleData = () => {
-    setCardData(EXAMPLE_CARD_DATA);
+    setCardData(prev => ({ ...prev, ...EXAMPLE_CARD_DATA }));
     setSimulatorStep(3);
     setActiveTab('practice');
   };
 
   const startPractice = () => {
-    setCardData(INITIAL_CARD_DATA);
     setSimulatorStep(0);
     setActiveTab('practice');
   };
@@ -58,6 +86,13 @@ function App() {
               >
                 填寫教學
               </button>
+              <button
+                onClick={() => setActiveTab('admin')}
+                className={`w-10 h-10 flex items-center justify-center rounded-md text-sm transition-all ${activeTab === 'admin' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-200'}`}
+                title="管理後台"
+              >
+                ⚙️
+              </button>
             </div>
           </div>
         </div>
@@ -72,8 +107,8 @@ function App() {
                   <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">韓國電子入境卡教學</h1>
                     <p className="text-blue-100 text-sm md:text-base max-w-2xl">
-                      本教學專為 <strong>1/2 出發搭乘 LJ764 航班</strong> 的貴賓準備。<br/>
-                      請依照下方指示，於出發前完成線上入境卡填寫。
+                      本教學專門為您準備，將引導您完成韓國 e-Arrival Card 的填寫。<br/>
+                      請參考下方的航班與飯店資訊進行填寫練習。
                     </p>
                   </div>
                   <div className="mt-6 md:mt-0">
@@ -86,13 +121,14 @@ function App() {
                   </div>
                </div>
             </div>
-            <GuideInfo />
+            {/* Pass cardData to GuideInfo so it reflects URL changes */}
+            <GuideInfo customData={cardData} />
             <div className="text-center mt-12 mb-12">
                <button 
                 onClick={startPractice}
                 className="bg-korea-blue text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-2 mx-auto"
                >
-                 <span>填寫教學</span>
+                 <span>開始模擬填寫</span>
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                </button>
             </div>
@@ -103,35 +139,37 @@ function App() {
           <div className="max-w-7xl mx-auto px-4 py-8 animate-fade-in-up">
             <div className="text-center mb-8">
                <h2 className="text-2xl font-bold text-gray-800">電子入境卡 (e-Arrival Card) 填寫模擬</h2>
-               <div className="inline-flex items-center gap-2 bg-blue-50 text-korea-blue px-4 py-2 rounded-full mt-3 text-sm font-medium border border-blue-100">
-                  <span>✈️ 航班: LJ764</span>
+               <div className="inline-flex items-center gap-2 bg-blue-50 text-korea-blue px-4 py-2 rounded-full mt-3 text-sm font-medium border border-blue-100 shadow-sm">
+                  <span>✈️ 航班: {cardData.flightNumber}</span>
                   <span className="w-1 h-1 bg-blue-300 rounded-full"></span>
-                  <span>🏨 飯店: Hotel The One</span>
+                  <span>🏨 飯店: {cardData.detailAddress}</span>
                </div>
                <p className="text-gray-500 mt-4 text-sm max-w-xl mx-auto">
-                 {simulatorStep === 0 && "Step 1: 請點選大勾選框同意條款。"}
-                 {simulatorStep === 1 && "Step 2: 請填寫您個人的 Email 並點選「確認」。"}
-                 {simulatorStep === 2 && "Step 3: 請模擬上傳護照。"}
-                 {simulatorStep >= 3 && "Step 4: 請檢查並填寫資料。"}
+                 {simulatorStep === 0 && "Step 1: 請點選「全部同意」按鈕。"}
+                 {simulatorStep === 1 && "Step 2: 請填寫您的 Email 並點選「確認」。"}
+                 {simulatorStep === 2 && "Step 3: 請點選相機圖示模擬拍照。"}
+                 {simulatorStep >= 3 && "Step 4: 請依照上方資訊欄核對並填寫資料。"}
                </p>
             </div>
             
             <ArrivalCard 
-              key={`sim-${simulatorStep}`} 
+              key={`sim-${simulatorStep}-${cardData.flightNumber}`} 
               data={cardData} 
               onChange={handleCardChange} 
               initialStep={simulatorStep} 
             />
           </div>
         )}
+
+        {activeTab === 'admin' && <AdminPage />}
       </main>
 
       <footer className="bg-white border-t border-gray-200 mt-12">
         <div className="max-w-7xl mx-auto py-8 px-4 text-center">
           <p className="text-gray-400 text-sm">
-            本頁面為旅行社客戶教學專用，非官方申請頁面。
+            本頁面為教學專用，非官方申請頁面。
           </p>
-          <p className="text-gray-300 text-xs mt-4">© 2024 Korea Travel Guide.</p>
+          <p className="text-gray-300 text-xs mt-4">© 2024 Korea Travel Guide Helper.</p>
         </div>
       </footer>
       

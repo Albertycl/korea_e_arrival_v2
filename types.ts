@@ -13,15 +13,26 @@ export interface ArrivalCardData {
   passportExpiryDay?: string;
   homeAddress: string;
   koreaAddress: string;
-  koreaAddressKr?: string; // Korean Address for display
-  detailAddress: string; // New field for room number or hotel name details
+  koreaAddressKr?: string; 
+  detailAddress: string; 
   koreaPhone: string;
-  email: string; // New field for Step 2
+  email: string; 
   purpose: string;
   flightNumber: string;
   entryDate?: string;
   departureDate?: string;
   departureFlightNumber?: string;
+}
+
+export interface AdminConfig {
+  arrivalFlight: string;
+  arrivalDate: string;
+  departureFlight: string;
+  departureDate: string;
+  hotelName: string;
+  hotelAddressKr: string;
+  hotelAddressEn: string;
+  hotelPhone: string;
 }
 
 export enum PurposeOfVisit {
