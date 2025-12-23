@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import LZString from 'lz-string';
 import { AdminConfig } from '../types';
 
 const AdminPage: React.FC = () => {
@@ -57,23 +58,59 @@ const AdminPage: React.FC = () => {
       config.hotelPhone
     ].join('|');
 
-    // Encode to Base64 (using encodeURIComponent to safely handle Korean characters)
-    const encoded = btoa(encodeURIComponent(compactData));
-    
+    // Encode using lz-string for better compression
+    const compressed = LZString.compressToEncodedURIComponent(compactData);
+
     // Final URL
-    const baseUrl = "https://krearrival.netlify.app/";
-    const slug = `${config.arrivalDate}-${config.hotelName.replace(/\s+/g, '_')}`;
-    const url = `${baseUrl}?c=${encoded}&p=${slug}`;
-    
+    const baseUrl = window.location.origin + window.location.pathname;
+    // Use 'd' parameter for compressed data to distinguish from legacy 'c' parameter
+    const url = `${baseUrl}?d=${compressed}`;
+
     setGeneratedUrl(url);
     setCopySuccess(false);
   };
 
-  const copyToClipboard = () => {
+  const copyToClipboard = async () => {
     if (!generatedUrl) return;
-    navigator.clipboard.writeText(generatedUrl);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
+
+    try {
+      // Try the modern API first
+      await navigator.clipboard.writeText(generatedUrl);
+      setCopySuccess(true);
+    } catch (err) {
+      // Fallback for older browsers or non-secure contexts
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = generatedUrl;
+
+        // Ensure it's not visible but part of the DOM
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+
+        textArea.focus();
+        textArea.select();
+
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+
+        if (successful) {
+          setCopySuccess(true);
+        } else {
+          console.error('Fallback copy failed');
+        }
+      } catch (fallbackErr) {
+        console.error('Copy failed', fallbackErr);
+      }
+    }
+
+    if (copySuccess) {
+      setTimeout(() => setCopySuccess(false), 2000);
+    } else {
+      // Even if we just set it, set timeout to clear it
+      setTimeout(() => setCopySuccess(false), 2000);
+    }
   };
 
   if (!isLoggedIn) {
@@ -87,9 +124,9 @@ const AdminPage: React.FC = () => {
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Username</label>
-            <input 
-              type="text" 
-              value={username} 
+            <input
+              type="text"
+              value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-korea-blue outline-none transition-all bg-gray-50"
               placeholder="yvonne"
@@ -98,9 +135,9 @@ const AdminPage: React.FC = () => {
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Password</label>
-            <input 
-              type="password" 
-              value={password} 
+            <input
+              type="password"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-korea-blue outline-none transition-all bg-gray-50"
               placeholder="••••••••"
