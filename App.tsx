@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import ArrivalCard from './components/ArrivalCard';
 import GuideInfo from './components/GuideInfo';
 import AdminPage from './components/AdminPage';
-import { ArrivalCardData, AdminConfig, PurposeOfVisit } from './types';
+import BusinessCard from './components/BusinessCard';
+import { ArrivalCardData, AdminConfig } from './types';
 import { INITIAL_CARD_DATA, EXAMPLE_CARD_DATA } from './constants';
 
 type AppStep = 'guide' | 'practice' | 'admin';
@@ -13,27 +14,42 @@ function App() {
   const [activeTab, setActiveTab] = useState<AppStep>('guide');
   const [simulatorStep, setSimulatorStep] = useState(0);
 
-  // Check URL for custom configuration on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const configRaw = params.get('c');
     if (configRaw) {
       try {
-        const decoded = decodeURIComponent(atob(configRaw));
-        const config: AdminConfig = JSON.parse(decoded);
+        const decodedStr = decodeURIComponent(atob(configRaw));
         
-        // Update INITIAL_CARD_DATA with these custom values
-        setCardData(prev => ({
-          ...prev,
-          flightNumber: config.arrivalFlight,
-          entryDate: config.arrivalDate,
-          departureFlightNumber: config.departureFlight,
-          departureDate: config.departureDate,
-          detailAddress: config.hotelName,
-          koreaAddressKr: config.hotelAddressKr,
-          koreaAddress: config.hotelAddressEn,
-          koreaPhone: config.hotelPhone
-        }));
+        if (decodedStr.includes('|')) {
+          const parts = decodedStr.split('|');
+          if (parts.length >= 8) {
+            setCardData(prev => ({
+              ...prev,
+              flightNumber: parts[0],
+              entryDate: parts[1],
+              departureFlightNumber: parts[2],
+              departureDate: parts[3],
+              detailAddress: parts[4],
+              koreaAddressKr: parts[5],
+              koreaAddress: parts[6],
+              koreaPhone: parts[7]
+            }));
+          }
+        } else {
+          const config: AdminConfig = JSON.parse(decodedStr);
+          setCardData(prev => ({
+            ...prev,
+            flightNumber: config.arrivalFlight,
+            entryDate: config.arrivalDate,
+            departureFlightNumber: config.departureFlight,
+            departureDate: config.departureDate,
+            detailAddress: config.hotelName,
+            koreaAddressKr: config.hotelAddressKr,
+            koreaAddress: config.hotelAddressEn,
+            koreaPhone: config.hotelPhone
+          }));
+        }
       } catch (e) {
         console.error("Failed to decode URL config", e);
       }
@@ -57,7 +73,6 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
-      {/* Navigation Header */}
       <nav className="bg-white shadow-md sticky top-0 z-50 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
@@ -98,7 +113,6 @@ function App() {
         </div>
       </nav>
 
-      {/* Main Content Area */}
       <main className="flex-grow">
         {activeTab === 'guide' && (
           <div className="max-w-7xl mx-auto px-4 py-8 animate-fade-in-up">
@@ -121,7 +135,6 @@ function App() {
                   </div>
                </div>
             </div>
-            {/* Pass cardData to GuideInfo so it reflects URL changes */}
             <GuideInfo customData={cardData} />
             <div className="text-center mt-12 mb-12">
                <button 
@@ -144,12 +157,6 @@ function App() {
                   <span className="w-1 h-1 bg-blue-300 rounded-full"></span>
                   <span>🏨 飯店: {cardData.detailAddress}</span>
                </div>
-               <p className="text-gray-500 mt-4 text-sm max-w-xl mx-auto">
-                 {simulatorStep === 0 && "Step 1: 請點選「全部同意」按鈕。"}
-                 {simulatorStep === 1 && "Step 2: 請填寫您的 Email 並點選「確認」。"}
-                 {simulatorStep === 2 && "Step 3: 請點選相機圖示模擬拍照。"}
-                 {simulatorStep >= 3 && "Step 4: 請依照上方資訊欄核對並填寫資料。"}
-               </p>
             </div>
             
             <ArrivalCard 
@@ -164,12 +171,15 @@ function App() {
         {activeTab === 'admin' && <AdminPage />}
       </main>
 
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto py-8 px-4 text-center">
-          <p className="text-gray-400 text-sm">
-            本頁面為教學專用，非官方申請頁面。
-          </p>
-          <p className="text-gray-300 text-xs mt-4">© 2024 Korea Travel Guide Helper.</p>
+      <footer className="bg-white border-t border-gray-200 mt-12 py-12 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col items-center">
+          <div className="mb-10 w-full">
+            <BusinessCard />
+          </div>
+          <div className="text-center">
+            <p className="text-gray-400 text-sm">本頁面為教學專用，非官方申請頁面。</p>
+            <p className="text-gray-300 text-xs mt-4">© 2024 Korea Travel Guide Helper.</p>
+          </div>
         </div>
       </footer>
       
