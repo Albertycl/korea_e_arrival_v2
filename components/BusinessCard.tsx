@@ -19,7 +19,7 @@ const BusinessCard: React.FC = () => {
       <div className="bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden p-8 text-left transition-all hover:shadow-2xl hover:-translate-y-1 relative group">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full -mr-16 -mt-16 transition-all group-hover:bg-orange-100 opacity-50"></div>
-        
+
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -66,7 +66,7 @@ const BusinessCard: React.FC = () => {
           </div>
           <div className="flex items-center gap-4 group/item">
             <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover/item:bg-green-50 group-hover/item:text-green-600 transition-colors">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.304c0-5.691-5.383-10.304-12-10.304s-12 4.613-12 10.304c0 5.09 4.274 9.319 10.069 10.142l-1.181 3.543 4.14-2.304c.321.015.645.022.972.022 6.617 0 12-4.613 12-10.304z"/></svg>
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.304c0-5.691-5.383-10.304-12-10.304s-12 4.613-12 10.304c0 5.09 4.274 9.319 10.069 10.142l-1.181 3.543 4.14-2.304c.321.015.645.022.972.022 6.617 0 12-4.613 12-10.304z" /></svg>
             </div>
             <div>
               <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Line ID</p>
@@ -91,19 +91,19 @@ const BusinessCard: React.FC = () => {
             <p className="mt-1">TEL: 02-2772-3388 <span className="text-gray-200 mx-2">|</span> FAX: 02-2752-9900</p>
           </div>
           <div className="flex items-end">
-            <a 
-              href="https://line.me/ti/p/yvonne0105" 
-              target="_blank" 
+            <a
+              href="https://line.me/ti/p/~yvonne0105"
+              target="_blank"
               rel="noreferrer"
               className="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-full font-bold text-xs shadow-lg shadow-green-200 transition-all flex items-center gap-2 active:scale-95"
             >
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.304c0-5.691-5.383-10.304-12-10.304s-12 4.613-12 10.304c0 5.09 4.274 9.319 10.069 10.142l-1.181 3.543 4.14-2.304c.321.015.645.022.972.022 6.617 0 12-4.613 12-10.304z"/></svg>
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.304c0-5.691-5.383-10.304-12-10.304s-12 4.613-12 10.304c0 5.09 4.274 9.319 10.069 10.142l-1.181 3.543 4.14-2.304c.321.015.645.022.972.022 6.617 0 12-4.613 12-10.304z" /></svg>
               立即加 LINE 諮詢
             </a>
           </div>
         </div>
       </div>
-      
+
       {/* Visual Badge */}
       <div className="mt-8 flex justify-center opacity-30">
         <div className="px-4 py-1 border-y border-gray-300 text-[10px] uppercase tracking-[0.5em] text-gray-500 font-black">
