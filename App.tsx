@@ -91,6 +91,10 @@ function App() {
     setActiveTab('practice');
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
       <nav className="bg-white shadow-md sticky top-0 z-50 border-b border-gray-200">
@@ -102,7 +106,7 @@ function App() {
                 <h1 className="font-bold text-lg md:text-xl text-korea-blue tracking-tight leading-tight">
                   韓國領隊 Sunny 教你填寫入境卡
                 </h1>
-                <span className="text-[10px] text-gray-500 tracking-wider">韓國導遊領隊桑尼Sunny 教你填寫電子入境卡填寫教學</span>
+                <span className="text-[10px] text-gray-500 tracking-wider hidden md:block">韓國導遊領隊桑尼Sunny 教你填寫電子入境卡填寫教學</span>
               </div>
             </div>
             <div className="flex space-x-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
@@ -169,8 +173,10 @@ function App() {
           <div className="max-w-7xl mx-auto px-4 py-8 animate-fade-in-up">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800">電子入境卡 (e-Arrival Card) 填寫模擬</h2>
-              <div className="inline-flex items-center gap-2 bg-blue-50 text-korea-blue px-4 py-2 rounded-full mt-3 text-sm font-medium border border-blue-100 shadow-sm">
-                <span>✈️ 航班: {cardData.flightNumber}</span>
+              <div className="inline-flex flex-wrap justify-center items-center gap-2 bg-blue-50 text-korea-blue px-4 py-2 rounded-full mt-3 text-sm font-medium border border-blue-100 shadow-sm">
+                <span>✈️ 入境: {cardData.flightNumber}</span>
+                <span className="w-1 h-1 bg-blue-300 rounded-full"></span>
+                <span>🛫 出境: {cardData.departureFlightNumber}</span>
                 <span className="w-1 h-1 bg-blue-300 rounded-full"></span>
                 <span>🏨 飯店: {cardData.detailAddress}</span>
               </div>
